@@ -157,11 +157,9 @@ function confirmCatch() {
     const caughtIds = SANRIO_DATABASE.filter(x => x.caught).map(x => x.id);
     localStorage.setItem('sanrio_catch_dex', JSON.stringify(caughtIds));
     
-    // Destruye el destello actual y frena su temporizador
     currentSparkleTarget.destroyVisuals();
     updateHUD();
     
-    // Al atrapar uno, generamos otro nuevo en el mapa para mantenerlo lleno
     if (phaserScene) {
       spawnRandomSparkle(phaserScene);
     }
@@ -171,7 +169,7 @@ function confirmCatch() {
 }
 
 // -------------------------------------------------------------
-// MOTOR PHASER 3: MAPA EXPANDIDO + JOYSTICK + SPAWNS DINÁMICOS
+// MOTOR PHASER 3
 // -------------------------------------------------------------
 const config = {
   type: Phaser.AUTO,
@@ -184,7 +182,6 @@ const config = {
 
 const game = new Phaser.Game(config);
 let player, sparklesGroup;
-// MUNDO MÁS GRANDE
 let worldWidth = 3000, worldHeight = 3000;
 let joystickBase, joystickThumb, isDragging = false;
 
@@ -211,23 +208,14 @@ function preload() {
 function create() {
   phaserScene = this;
   
-  // Fondo
-  this.add.tileSprite(worldWidth/2, worldHeight/2, worldWidth, worldHeight, 'tileGrass');
+  // SOLUCIÓN MUROS INVISIBLES: Ajustamos el tamaño del mundo de físicas
+  this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
   
-  // Borde visual del mapa para que sepa dónde termina
+  this.add.tileSprite(worldWidth/2, worldHeight/2, worldWidth, worldHeight, 'tileGrass');
   this.add.rectangle(worldWidth/2, worldHeight/2, worldWidth, worldHeight).setStrokeStyle(16, 0xff9ebb);
 
-  // Muchas más decoraciones para el mapa gigante
-  const decoColors = ['#ffccd5', '#c8b6ff', '#ffd6a5', '#bbf7d0'];
-  for (let i = 0; i < 150; i++) {
-    let rx = Phaser.Math.Between(50, worldWidth - 50);
-    let ry = Phaser.Math.Between(50, worldHeight - 50);
-    let rColor = decoColors[Phaser.Math.Between(0, decoColors.length - 1)];
-    this.add.circle(rx, ry, Phaser.Math.Between(20, 35), Phaser.Display.Color.HexStringToColor(rColor).color, 0.85);
-    this.add.text(rx, ry, ['🌸', '🍄', '🧁', '🌲', '🍓', '🎀'][Phaser.Math.Between(0, 5)], { fontSize: '22px' }).setOrigin(0.5);
-  }
+  // NOTA: Se ha eliminado el código que generaba las decoraciones estáticas (flores, árboles, etc.)
 
-  // Jugador
   player = this.physics.add.sprite(worldWidth / 2, worldHeight / 2, 'playerTexture');
   player.setCollideWorldBounds(true);
   player.body.setSize(30, 30);
@@ -236,13 +224,11 @@ function create() {
   this.cameras.main.startFollow(player, true, 0.08, 0.08);
   this.cameras.main.setZoom(1.1);
 
-  // Spawns dinámicos (Comenzamos con 15 destellos en todo el mapa)
   sparklesGroup = [];
   for(let i = 0; i < 15; i++) {
     spawnRandomSparkle(this);
   }
 
-  // JOYSTICK VIRTUAL
   joystickBase = this.add.circle(0, 0, 60, 0xffb3c6, 0.5).setScrollFactor(0).setDepth(100).setVisible(false);
   joystickThumb = this.add.circle(0, 0, 30, 0xff758c, 0.9).setScrollFactor(0).setDepth(101).setVisible(false);
 
@@ -258,18 +244,17 @@ function create() {
     
     let angle = Phaser.Math.Angle.Between(joystickBase.x, joystickBase.y, pointer.x, pointer.y);
     let distance = Phaser.Math.Distance.Between(joystickBase.x, joystickBase.y, pointer.x, pointer.y);
-    let maxDist = 60; // Radio máximo del joystick
+    let maxDist = 60; 
     
     if (distance > maxDist) distance = maxDist;
     
     joystickThumb.x = joystickBase.x + Math.cos(angle) * distance;
     joystickThumb.y = joystickBase.y + Math.sin(angle) * distance;
     
-    // Velocidad basada en qué tan lejos se estira el joystick
     let speedX = (distance / maxDist) * Math.cos(angle);
     let speedY = (distance / maxDist) * Math.sin(angle);
     
-    player.setVelocity(speedX * 300, speedY * 300); // Velocidad máxima 300
+    player.setVelocity(speedX * 300, speedY * 300); 
   });
 
   this.input.on('pointerup', () => {
@@ -283,15 +268,12 @@ function create() {
 }
 
 function spawnRandomSparkle(scene) {
-  // Elegir un personaje aleatorio de la base de datos
   const randomChar = SANRIO_DATABASE[Phaser.Math.Between(0, SANRIO_DATABASE.length - 1)];
-
   const sx = Phaser.Math.Between(100, worldWidth - 100);
   const sy = Phaser.Math.Between(100, worldHeight - 100);
 
-  // Efectos visuales dependiendo de la rareza
   let auraColor = 0xffeb3b;
-  if (randomChar.rarity.includes('★★★★')) auraColor = 0xff9800; // Naranja/Dorado para secretos
+  if (randomChar.rarity.includes('★★★★')) auraColor = 0xff9800; 
   
   const starText = scene.add.text(sx, sy, '✨', { fontSize: '26px' }).setOrigin(0.5);
   const aura = scene.add.circle(sx, sy, 22, auraColor, 0.4);
@@ -303,11 +285,10 @@ function spawnRandomSparkle(scene) {
     duration: 800, yoyo: true, repeat: -1
   });
 
-  // Determinar tiempo de vida antes de desaparecer (en milisegundos)
-  let lifetime = 60000; // 1 min (Común)
-  if (randomChar.rarity.includes('★★★★')) lifetime = 15000; // 15 seg
-  else if (randomChar.rarity.includes('★★★')) lifetime = 30000; // 30 seg
-  else if (randomChar.rarity.includes('★★')) lifetime = 45000; // 45 seg
+  let lifetime = 60000; 
+  if (randomChar.rarity.includes('★★★★')) lifetime = 15000; 
+  else if (randomChar.rarity.includes('★★★')) lifetime = 30000; 
+  else if (randomChar.rarity.includes('★★')) lifetime = 45000; 
 
   const sparkleObj = {
     x: sx, y: sy,
@@ -316,16 +297,15 @@ function spawnRandomSparkle(scene) {
     destroyVisuals: function() {
       starText.destroy();
       aura.destroy();
-      if (this.timer) this.timer.remove(); // Limpiar el temporizador
+      if (this.timer) this.timer.remove(); 
       const idx = sparklesGroup.indexOf(this);
       if (idx > -1) sparklesGroup.splice(idx, 1);
     }
   };
 
-  // Temporizador para desaparecer y reaparecer en otro lado
   sparkleObj.timer = scene.time.delayedCall(lifetime, () => {
     sparkleObj.destroyVisuals();
-    spawnRandomSparkle(scene); // Reaparece un nuevo personaje aleatorio
+    spawnRandomSparkle(scene); 
   });
 
   sparklesGroup.push(sparkleObj);
@@ -334,13 +314,11 @@ function spawnRandomSparkle(scene) {
 function update() {
   if (!player) return;
 
-  // Si se abre un menú mientras se mueve, detener al jugador
   if (document.getElementById('catch-modal').classList.contains('active')) {
     player.setVelocity(0, 0);
     return;
   }
 
-  // Detección de colisión con los destellos (Radio de captura)
   sparklesGroup.forEach(sparkle => {
     const dist = Phaser.Math.Distance.Between(player.x, player.y, sparkle.x, sparkle.y);
     if (dist < 48) {
