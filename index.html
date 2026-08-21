@@ -18,36 +18,61 @@
     #stats-badge { position: absolute; top: 16px; left: 16px; background: rgba(255, 255, 255, 0.9); color: #ff5e7e; padding: 8px 14px; border-radius: 20px; font-weight: 900; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
     .joystick-zone { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.4); padding: 8px 16px; border-radius: 12px; pointer-events: none; z-index: 5; text-align: center; width: 80%; }
     
-    .modal-overlay, .catch-modal { position: absolute; inset: 0; z-index: 100; display: none; flex-direction: column; padding: 20px; animation: fadeIn 0.25s ease; }
-    .modal-overlay { background: rgba(30, 15, 45, 0.85); backdrop-filter: blur(6px); }
-    .catch-modal { background: rgba(0, 0, 0, 0.75); justify-content: center; align-items: center; text-align: center; z-index: 150; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .modal-overlay.active, .catch-modal.active { display: flex; }
+    .modal-overlay { position: absolute; inset: 0; z-index: 100; display: none; flex-direction: column; padding: 20px; background: rgba(30, 15, 45, 0.85); backdrop-filter: blur(6px); animation: fadeIn 0.25s ease; }
+    .modal-overlay.active { display: flex; }
     
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    /* Catch Modal Styles */
+    .catch-modal { position: absolute; inset: 0; z-index: 150; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: rgba(0, 0, 0, 0.75); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .catch-modal.active { display: flex; }
+    .catch-card { background: linear-gradient(145deg, #ffffff, #fff2f6); border: 4px solid #ff758c; border-radius: 24px; padding: 25px; width: 90%; max-width: 360px; box-shadow: 0 10px 30px rgba(255, 117, 140, 0.5); position: relative; }
+    .new-badge { position: absolute; top: -15px; right: -15px; background: #4caf50; color: white; padding: 8px 15px; border-radius: 20px; font-weight: 900; font-size: 14px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transform: rotate(10deg); animation: pulse 1s infinite alternate; display: none; }
     
+    /* Botones de Elección */
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+    .choice-btn { flex: 1; padding: 12px 10px; border-radius: 15px; border: none; font-family: 'Mali', cursive; font-weight: 800; font-size: 14px; color: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.1s; }
+    .choice-btn:active { transform: scale(0.95); }
+    .btn-quiz { background: linear-gradient(135deg, #ab47bc, #7b1fa2); }
+    .btn-luck { background: linear-gradient(135deg, #ffa726, #f57c00); }
+    
+    /* Minijuegos Modals */
+    .game-modal { position: absolute; inset: 0; z-index: 200; display: none; flex-direction: column; background: #fff0f5; padding: 20px; animation: fadeIn 0.2s ease; overflow-y: auto; }
+    .game-modal.active { display: flex; }
+    
+    /* Quiz UI */
+    .quiz-header { font-size: 18px; font-weight: 900; color: #4a284e; text-align: center; margin-bottom: 10px; }
+    .timer-bar { width: 100%; height: 12px; background: #ddd; border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+    .timer-fill { height: 100%; background: #ff477e; width: 100%; transition: width 1s linear; }
+    .question-box { background: white; padding: 15px; border-radius: 15px; border: 2px solid #ffb6c1; text-align: center; font-weight: 700; color: #333; margin-bottom: 20px; font-size: 16px; }
+    .answers-grid { display: grid; gap: 10px; }
+    .answer-btn { background: #ffe3ec; border: 2px solid #ff9ebb; border-radius: 12px; padding: 12px; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 15px; color: #4a284e; cursor: pointer; transition: 0.2s; }
+    .answer-btn:active { background: #ffb6c1; }
+    
+    /* Cards Minigame UI */
+    .cards-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 16px; color: #4a284e; margin-bottom: 15px; }
+    .cards-grid { display: grid; gap: 8px; justify-content: center; }
+    .memory-card { background: #ffb6c1; border: 3px solid #fff; border-radius: 10px; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s transform; font-size: 32px; }
+    .memory-card.flipped { background: white; transform: rotateY(180deg); cursor: default; }
+    .memory-card img { width: 80%; height: 80%; object-fit: contain; }
+
+    /* Dex UI */
     .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: #ffe6eb; }
     .dex-header h2 { font-family: 'Mali', cursive; font-size: 24px; color: #ff9ebb; text-shadow: 0 2px 4px rgba(0,0,0,0.3); margin: 0; }
     .close-btn { background: #ff5e7e; color: white; border: 2px solid white; width: 34px; height: 34px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
-    
     .dex-tabs { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
     .dex-tabs::-webkit-scrollbar { display: none; }
     .dex-tab { background: #ffe3ec; border: 2px solid #ff9ebb; border-radius: 15px; padding: 6px 14px; font-family: 'Quicksand', sans-serif; font-weight: 800; font-size: 13px; color: #ff5e7e; cursor: pointer; white-space: nowrap; transition: 0.2s; }
-    .dex-tab.active { background: #ff5e7e; color: white; border-color: #fff; box-shadow: 0 2px 8px rgba(255, 94, 126, 0.5); }
-
+    .dex-tab.active { background: #ff5e7e; color: white; border-color: #fff; }
     .dex-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; overflow-y: auto; padding-bottom: 20px; }
-    .dex-card { background: #fff; border-radius: 18px; padding: 12px; text-align: center; position: relative; border: 3px solid #ffb6c1; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: 0.2s; }
+    .dex-card { background: #fff; border-radius: 18px; padding: 12px; text-align: center; position: relative; border: 3px solid #ffb6c1; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
     .dex-card.locked { background: #e0d8ea; border-color: #baa3cc; filter: grayscale(0.9); opacity: 0.7; }
     .card-rarity { position: absolute; top: 8px; right: 8px; font-size: 11px; background: #ffe3ec; padding: 2px 6px; border-radius: 8px; color: #ff477e; font-weight: 700; }
     .card-icon { font-size: 42px; margin: 8px 0; display: block; }
     .card-name { font-size: 14px; font-weight: 800; color: #4a284e; }
     .card-theme { font-size: 11px; color: #8c7391; margin-top: 2px; }
-    .card-note { font-size: 11px; color: #ff5e7e; margin-top: 6px; background: #fff0f5; padding: 4px; border-radius: 8px; font-style: italic; }
-    
-    .catch-card { background: linear-gradient(145deg, #ffffff, #fff2f6); border: 4px solid #ff758c; border-radius: 24px; padding: 25px; width: 85%; box-shadow: 0 10px 30px rgba(255, 117, 140, 0.5); }
-    .catch-emoji { font-size: 72px; animation: bounce 1s infinite alternate; }
-    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-    .catch-btn { margin-top: 18px; background: linear-gradient(135deg, #42e695, #3bb2b8); color: white; border: none; padding: 12px 28px; border-radius: 25px; font-family: 'Mali', cursive; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(66, 230, 149, 0.4); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes pulse { from { transform: scale(1) rotate(10deg); } to { transform: scale(1.1) rotate(10deg); } }
   </style>
 </head>
 <body>
@@ -55,69 +80,168 @@
 <div id="game-container">
   <div id="stats-badge">🌸 Álbum: <span id="dex-count">0/0</span></div>
   <button id="dex-btn" class="hud-btn" onclick="toggleDex(true)">📖 Álbum</button>
-  <div class="joystick-zone">🕹️ Toca y arrastra en cualquier parte para usar el Joystick</div>
+  <div class="joystick-zone">🕹️ Toca y arrastra en cualquier parte para moverte</div>
 
-  <!-- Modal SanrioDex (Estilo Álbum) -->
+  <!-- Modal SanrioDex -->
   <div id="dex-modal" class="modal-overlay">
     <div class="dex-header">
       <h2>🌸 Colección</h2>
       <button class="close-btn" onclick="toggleDex(false)">✕</button>
     </div>
-    
-    <!-- Pestañas de Colecciones -->
     <div class="dex-tabs" id="dex-tabs-container"></div>
-
-    <!-- Cuadrícula de Figuritas -->
     <div id="dex-grid" class="dex-grid"></div>
   </div>
 
-  <!-- Modal Captura -->
+  <!-- Modal Encuentro (Captura inicial) -->
   <div id="catch-modal" class="catch-modal">
     <div class="catch-card">
+      <div id="new-badge" class="new-badge">¡NUEVO! ✨</div>
       <div id="catch-rarity-tag" style="font-weight:900; color:#ff477e; margin-bottom:6px;">✨ ¡DESTELlO ENCONTRADO!</div>
-      <div id="catch-icon-container" style="min-height: 100px; display: flex; justify-content: center; align-items: center;"></div>
+      <div id="catch-icon-container" style="min-height: 100px; display: flex; justify-content: center; align-items: center; font-size:72px;"></div>
       <h3 id="catch-name" style="font-family:'Mali', cursive; font-size:22px; color:#2b1f3d; margin: 10px 0 4px 0;">Hello Kitty</h3>
-      <p id="catch-theme" style="font-size:13px; color:#8a6d91; font-weight:700; margin-bottom:12px;">Edición San Valentín</p>
-      <p id="catch-msg" style="font-size:12px; color:#555; background:#fff; padding:8px; border-radius:10px; border:1px dashed #ff9ebb;">"¡Te encontré explorando el bosque dulce!"</p>
-      <button class="catch-btn" onclick="confirmCatch()">¡Atrapar con Corazón! 💖</button>
+      <p id="catch-theme" style="font-size:13px; color:#8a6d91; font-weight:700; margin-bottom:12px;">Variante</p>
+      
+      <!-- Si ya lo tiene, se muestra un botón simple. Si no, debe jugar. -->
+      <div id="catch-actions-new">
+        <p style="font-size:12px; color:#555; margin-bottom:5px;">Elige cómo intentar atraparlo:</p>
+        <div class="btn-row">
+          <button class="choice-btn btn-quiz" onclick="startQuiz()">🧠 Quiz<br><span style="font-size:10px">Tiempo en contra</span></button>
+          <button class="choice-btn btn-luck" onclick="startMinigame()">🃏 Cartas<br><span style="font-size:10px">Pura suerte</span></button>
+        </div>
+      </div>
+      
+      <div id="catch-actions-owned" style="display:none;">
+        <p style="font-size:12px; color:#555; margin-bottom:10px;">¡Ya lo tienes en tu álbum!</p>
+        <button class="choice-btn btn-quiz" style="width:100%" onclick="closeEncounter()">Dejarlo ir 👋</button>
+      </div>
     </div>
   </div>
+
+  <!-- Modal Juego QUIZ -->
+  <div id="quiz-modal" class="game-modal">
+    <div class="quiz-header" id="quiz-header-text">Pregunta 1 de 3</div>
+    <div class="timer-bar"><div id="quiz-timer-fill" class="timer-fill"></div></div>
+    <div id="quiz-question" class="question-box">¿Cuál es el color favorito de este personaje?</div>
+    <div id="quiz-answers" class="answers-grid"></div>
+  </div>
+
+  <!-- Modal Juego CARTAS -->
+  <div id="minigame-modal" class="game-modal">
+    <div class="cards-header">
+      <span id="cards-target-text">Encuentra: 0/3</span>
+      <span id="cards-mistakes-text" style="color:#d32f2f;">Errores: 0/3</span>
+    </div>
+    <div id="cards-grid" class="cards-grid"></div>
+  </div>
+
 </div>
 
 <script>
+// --- BANCO DE PREGUNTAS (Puedes añadir tantas como quieras por personaje) ---
+const QUESTION_BANK = {
+  'Hello Kitty': [
+    { q: "¿Cuál es el verdadero nombre de Hello Kitty?", a: ["Kitty White", "Kitty London", "Hello White", "Mary Kitty"], correct: 0 },
+    { q: "¿Cuánto pesa Hello Kitty según su biografía?", a: ["3 manzanas", "5 manzanas", "3 fresas", "Un gatito"], correct: 0 },
+    { q: "¿De qué ciudad es originaria?", a: ["Londres", "Tokio", "París", "Nueva York"], correct: 0 },
+    { q: "¿Quién es su novio?", a: ["Dear Daniel", "Tippy", "Thomas", "Badtz-Maru"], correct: 0 },
+    { q: "¿Qué instrumento toca muy bien?", a: ["El piano", "La guitarra", "El violín", "La batería"], correct: 0 }
+  ],
+  'Cinnamoroll': [
+    { q: "¿Qué tipo de animal es Cinnamoroll?", a: ["Un perrito", "Un conejito", "Una nube", "Un osito"], correct: 0 },
+    { q: "¿Con qué parte de su cuerpo puede volar?", a: ["Sus orejas largas", "Su cola mágica", "Sus alas ocultas", "Sus patitas"], correct: 0 },
+    { q: "¿Cuál es el nombre de su cafetería?", a: ["Cafe Cinnamon", "Nubes de Azúcar", "Estrella Fugaz", "Panadería Dulce"], correct: 0 },
+    { q: "¿Por qué se llama así?", a: ["Su cola parece un rollo de canela", "Huele a canela", "Es su especia favorita", "Su dueña se llama Cinnamon"], correct: 0 }
+  ],
+  'Kuromi': [
+    { q: "¿Quién es la eterna rival de Kuromi?", a: ["My Melody", "Hello Kitty", "Badtz-Maru", "Chococat"], correct: 0 },
+    { q: "¿Qué día es el cumpleaños de Kuromi?", a: ["31 de Octubre", "14 de Febrero", "1 de Enero", "13 de Viernes"], correct: 0 },
+    { q: "¿De qué grupo es líder Kuromi?", a: ["Kuromi's 5", "Las Calaveras Negras", "Motoristas Rosa", "Rebeldes de Sanrio"], correct: 0 },
+    { q: "¿De qué color es la calavera en su gorro?", a: ["Rosa", "Blanco", "Morado", "Rojo"], correct: 0 }
+  ],
+  'Pompompurin': [
+    { q: "¿Qué raza de perro es Pompompurin?", a: ["Golden Retriever", "Labrador", "Beagle", "Corgi"], correct: 0 },
+    { q: "¿Cuál es su comida favorita?", a: ["El pudín de su mamá", "Galletas de mantequilla", "Helado de vainilla", "Huesos de goma"], correct: 0 },
+    { q: "¿Qué accesorio siempre lleva puesto?", a: ["Una boina marrón", "Un collar rojo", "Un moño azul", "Un sombrerito amarillo"], correct: 0 }
+  ],
+  'Badtz-Maru': [
+    { q: "¿Qué tipo de animal es Badtz-Maru?", a: ["Un pingüino", "Un cuervo", "Un búho", "Un pato enojado"], correct: 0 },
+    { q: "¿En qué fecha nació?", a: ["1 de Abril", "31 de Diciembre", "14 de Febrero", "Día de brujas"], correct: 0 },
+    { q: "¿Qué mascota tiene?", a: ["Un cocodrilo llamado Pochi", "Una serpiente", "Un pececito", "Un perro negro"], correct: 0 }
+  ],
+  'My Melody': [
+    { q: "¿Qué accesorio la caracteriza?", a: ["Una capucha roja o rosa", "Un moño amarillo", "Un collar de flores", "Unas botas rojas"], correct: 0 },
+    { q: "¿Quién le hizo su famosa capucha?", a: ["Su abuelita", "Su mamá", "Hello Kitty", "Ella misma"], correct: 0 },
+    { q: "¿Qué animal es?", a: ["Una conejita", "Una ratoncita", "Una gatita", "Una perrita"], correct: 0 }
+  ],
+  'Aggretsuko': [
+    { q: "¿Qué animal es Retsuko?", a: ["Panda Rojo", "Zorro", "Gato Naranja", "Mapache"], correct: 0 },
+    { q: "¿Qué hace para desestresarse del trabajo?", a: ["Cantar Death Metal", "Dormir", "Comer dulces", "Golpear almohadas"], correct: 0 },
+    { q: "¿En qué departamento trabaja?", a: ["Contabilidad", "Recursos Humanos", "Marketing", "Ventas"], correct: 0 },
+    { q: "¿Quién es su jefe cerdito?", a: ["Director Ton", "Señor Pig", "Jefe Porky", "Tsunoda"], correct: 0 }
+  ]
+};
+
+// Preguntas genéricas por si falta algún personaje en el banco de arriba
+const GENERIC_QUESTIONS = [
+  { q: "¿A qué franquicia pertenece este personaje?", a: ["Sanrio", "Disney", "Nintendo", "Studio Ghibli"], correct: 0 },
+  { q: "¿Qué significa 'Kawaii' en la cultura de este personaje?", a: ["Tierno/Lindo", "Enojado", "Fuerte", "Mágico"], correct: 0 },
+  { q: "¿Cuál de estos NO es un valor típico de los personajes de Sanrio?", a: ["Violencia", "Amistad", "Dulzura", "Magia"], correct: 0 }
+];
+
 const SANRIO_DATABASE = [
   // --- COLECCIÓN BASE ---
-  { id: 'base_hk', collection: 'Base', name: 'Hello Kitty', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🎀', spriteKey: 'HelloKitty', caught: false, msg: '¡Te entrego mi corazón!' },
-  { id: 'base_cinna', collection: 'Base', name: 'Cinnamoroll', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '☕', spriteKey: 'Cinnamon', caught: false, msg: '¡Volando hacia ti!' },
-  { id: 'base_melody', collection: 'Base', name: 'My Melody', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🌸', spriteKey: 'MyMelody', caught: false, msg: '¡Una flor para ti!' },
-  { id: 'base_purin', collection: 'Base', name: 'Pompompurin', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🍮', spriteKey: 'Pompompurin', caught: false, msg: '¡Un abrazo blandito!' },
-  { id: 'base_kuromi', collection: 'Base', name: 'Kuromi', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '💀', spriteKey: 'Kuromi', caught: false, msg: '¡También tengo mi lado dulce!' },
-  { id: 'base_keroppi', collection: 'Base', name: 'Keroppi', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🐸', spriteKey: 'Keroppi', caught: false, msg: '¡Saltando de alegría!' },
-  { id: 'base_badtz', collection: 'Base', name: 'Badtz-Maru', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '🐧', spriteKey: 'BadtzMaru', caught: false, msg: 'Hmpf... toma esto.' },
-  { id: 'base_lts', collection: 'Base', name: 'Little Twin Stars', theme: 'Corazón Mágico', rarity: '★★ Rara', emoji: '⭐', spriteKey: 'LittleTwinStars', caught: false, msg: '¡Amor desde las estrellas!' },
-  { id: 'base_tuxedo', collection: 'Base', name: 'Tuxedosam', theme: 'Corazón Elegante', rarity: '★★ Rara', emoji: '🎩', spriteKey: 'Tuxedosam', caught: false, msg: '¡Siempre tan distinguido!' },
-  { id: 'base_pochacco', collection: 'Base', name: 'Pochacco', theme: 'Corazón Deportivo', rarity: '★★ Rara', emoji: '🐶', spriteKey: 'Pochacco', caught: false, msg: '¡Corrí hasta aquí para verte!' },
-  { id: 'base_hangyo', collection: 'Base', name: 'Hangyodon', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🐟', spriteKey: 'Hangyodon', caught: false, msg: '¡Glub glub... te quiero!' },
-  { id: 'base_pekkle', collection: 'Base', name: 'Pekkle', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🦆', spriteKey: 'Pekkle', caught: false, msg: '¡Bailando de felicidad!' },
-  { id: 'base_gudetama', collection: 'Base', name: 'Gudetama', theme: 'Corazón Perezoso', rarity: '★★★ Épica', emoji: '🍳', spriteKey: 'Gudetama', caught: false, msg: 'Ugh... toma mi corazón, supongo.' },
-  { id: 'base_aggretsuko', collection: 'Base', name: 'Aggretsuko', theme: 'Corazón Furioso', rarity: '★★★★ Secreta', emoji: '🎸', spriteKey: 'Aggretsuko', caught: false, msg: '¡DEJA DE TRABAJAR Y ABRÁZAME!' },
-
-  // --- COLECCIÓN HALLOWEEN ---
-  { id: 'hw_kuromi', collection: 'Halloween 🎃', name: 'Kuromi', theme: 'Brujita Mágica', rarity: '★★ Rara', emoji: '🔮', spriteKey: null, caught: false, msg: '¡Dulce o truco!' },
-  { id: 'hw_hk', collection: 'Halloween 🎃', name: 'Hello Kitty', theme: 'Fantasmita', rarity: '★★★ Épica', emoji: '👻', spriteKey: null, caught: false, msg: '¡Buuu!' },
-
-  // --- COLECCIÓN NAVIDAD ---
-  { id: 'xmas_purin', collection: 'Navidad 🎄', name: 'Pompompurin', theme: 'Reno Goloso', rarity: '★★ Rara', emoji: '🦌', spriteKey: null, caught: false, msg: '¡Repartiendo regalos!' },
-  { id: 'xmas_cinna', collection: 'Navidad 🎄', name: 'Cinnamoroll', theme: 'Muñeco de Nieve', rarity: '★★★ Épica', emoji: '⛄', spriteKey: null, caught: false, msg: '¡Brrr, abrázame!' },
-
-  // --- COLECCIÓN PLAYA ---
-  { id: 'beach_melody', collection: 'Playa 🏖️', name: 'My Melody', theme: 'Sirena Pastel', rarity: '★★★★ Secreta', emoji: '🧜‍♀️', spriteKey: null, caught: false, msg: '¡Nadando en el mar de fresa!' }
+  { id: 'base_hk', collection: 'Base', name: 'Hello Kitty', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🎀', spriteKey: 'HelloKitty', caught: false },
+  { id: 'base_cinna', collection: 'Base', name: 'Cinnamoroll', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '☕', spriteKey: 'Cinnamon', caught: false },
+  { id: 'base_melody', collection: 'Base', name: 'My Melody', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🌸', spriteKey: 'MyMelody', caught: false },
+  { id: 'base_purin', collection: 'Base', name: 'Pompompurin', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🍮', spriteKey: 'Pompompurin', caught: false },
+  { id: 'base_kuromi', collection: 'Base', name: 'Kuromi', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '💀', spriteKey: 'Kuromi', caught: false },
+  { id: 'base_keroppi', collection: 'Base', name: 'Keroppi', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🐸', spriteKey: 'Keroppi', caught: false },
+  { id: 'base_badtz', collection: 'Base', name: 'Badtz-Maru', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '🐧', spriteKey: 'BadtzMaru', caught: false },
+  { id: 'base_lts', collection: 'Base', name: 'Little Twin Stars', theme: 'Corazón Mágico', rarity: '★★ Rara', emoji: '⭐', spriteKey: 'LittleTwinStars', caught: false },
+  { id: 'base_tuxedo', collection: 'Base', name: 'Tuxedosam', theme: 'Corazón Elegante', rarity: '★★ Rara', emoji: '🎩', spriteKey: 'Tuxedosam', caught: false },
+  { id: 'base_pochacco', collection: 'Base', name: 'Pochacco', theme: 'Corazón Deportivo', rarity: '★★ Rara', emoji: '🐶', spriteKey: 'Pochacco', caught: false },
+  { id: 'base_hangyo', collection: 'Base', name: 'Hangyodon', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🐟', spriteKey: 'Hangyodon', caught: false },
+  { id: 'base_pekkle', collection: 'Base', name: 'Pekkle', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🦆', spriteKey: 'Pekkle', caught: false },
+  { id: 'base_gudetama', collection: 'Base', name: 'Gudetama', theme: 'Corazón Perezoso', rarity: '★★★ Épica', emoji: '🍳', spriteKey: 'Gudetama', caught: false },
+  { id: 'base_aggretsuko', collection: 'Base', name: 'Aggretsuko', theme: 'Corazón Furioso', rarity: '★★★★ Secreta', emoji: '🎸', spriteKey: 'Aggretsuko', caught: false },
+  // --- EXTRAS ---
+  { id: 'hw_kuromi', collection: 'Halloween 🎃', name: 'Kuromi', theme: 'Brujita Mágica', rarity: '★★ Rara', emoji: '🔮', spriteKey: null, caught: false },
+  { id: 'xmas_purin', collection: 'Navidad 🎄', name: 'Pompompurin', theme: 'Reno Goloso', rarity: '★★ Rara', emoji: '🦌', spriteKey: null, caught: false },
 ];
 
 const collectionsList = [...new Set(SANRIO_DATABASE.map(item => item.collection))];
 let currentCollection = collectionsList[0];
+let currentSparkleTarget = null;
+let phaserScene = null;
 
-let savedDex = localStorage.getItem('sanrio_catch_dex_v2');
+// Variables globales Minijuegos
+let quizTimerInterval;
+let quizQuestions = [];
+let quizCurrentQIndex = 0;
+let quizCorrectRequired = 0;
+let quizTimeLeft = 0;
+let quizMaxTime = 0;
+
+let cardMatches = 0;
+let cardMistakes = 0;
+let cardTargetMatches = 0;
+let isAnimatingCards = false;
+
+// Helpers
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function getRarityStars(rarityString) {
+  return (rarityString.match(/★/g) || []).length;
+}
+
+// Carga Inicial
+let savedDex = localStorage.getItem('sanrio_catch_dex_v3');
 if (savedDex) {
   try {
     const ids = JSON.parse(savedDex);
@@ -130,6 +254,7 @@ function updateHUD() {
   document.getElementById('dex-count').innerText = `${caughtCount}/${SANRIO_DATABASE.length}`;
 }
 
+// Interfaz Álbum
 function renderTabs() {
   const tabsContainer = document.getElementById('dex-tabs-container');
   tabsContainer.innerHTML = '';
@@ -137,91 +262,244 @@ function renderTabs() {
     const btn = document.createElement('button');
     btn.className = `dex-tab ${col === currentCollection ? 'active' : ''}`;
     btn.innerText = col;
-    btn.onclick = () => {
-      currentCollection = col;
-      renderTabs();
-      renderDexGrid();
-    };
+    btn.onclick = () => { currentCollection = col; renderTabs(); renderDexGrid(); };
     tabsContainer.appendChild(btn);
   });
 }
 
 function toggleDex(show) {
   const modal = document.getElementById('dex-modal');
-  if (show) { 
-    renderTabs();
-    renderDexGrid(); 
-    modal.classList.add('active'); 
-  } else { 
-    modal.classList.remove('active'); 
-  }
+  if (show) { renderTabs(); renderDexGrid(); modal.classList.add('active'); } 
+  else { modal.classList.remove('active'); }
 }
 
 function renderDexGrid() {
   const grid = document.getElementById('dex-grid');
   grid.innerHTML = '';
-  
   const currentItems = SANRIO_DATABASE.filter(item => item.collection === currentCollection);
-  
   currentItems.forEach(item => {
     const card = document.createElement('div');
     card.className = `dex-card ${item.caught ? '' : 'locked'}`;
     let iconHTML = `<span class="card-icon">❓</span>`;
     if (item.caught) {
-      if (item.spriteKey) {
-        iconHTML = `<img src="${item.spriteKey}.png" alt="${item.name}" style="width: 60px; height: 60px; object-fit: contain; margin: 8px 0; display: block; margin-left: auto; margin-right: auto;">`;
-      } else {
-        iconHTML = `<span class="card-icon">${item.emoji}</span>`;
-      }
+      iconHTML = item.spriteKey 
+        ? `<img src="${item.spriteKey}.png" style="width: 60px; height: 60px; object-fit: contain; margin: 8px auto; display: block;">` 
+        : `<span class="card-icon">${item.emoji}</span>`;
     }
-    card.innerHTML = `<span class="card-rarity">${item.caught ? item.rarity : '???'}</span> ${iconHTML} <div class="card-name">${item.caught ? item.name : 'Desconocido'}</div> <div class="card-theme">${item.caught ? item.theme : 'Falta capturar'}</div> ${item.caught ? `<div class="card-note">${item.msg}</div>` : ''}`;
+    card.innerHTML = `<span class="card-rarity">${item.caught ? item.rarity : '???'}</span> ${iconHTML} <div class="card-name">${item.caught ? item.name : 'Desconocido'}</div> <div class="card-theme">${item.caught ? item.theme : 'Falta capturar'}</div>`;
     grid.appendChild(card);
   });
 }
 
-let currentSparkleTarget = null;
-let phaserScene = null;
-
+// --- SISTEMA DE ENCUENTRO ---
 function showCatchScreen(sparkleObj) {
   currentSparkleTarget = sparkleObj;
   const p = sparkleObj.characterData;
+  
   document.getElementById('catch-rarity-tag').innerText = `✨ ¡DE LA COLECCIÓN ${p.collection.toUpperCase()}!`;
+  
+  const isNew = !p.caught;
+  document.getElementById('new-badge').style.display = isNew ? 'block' : 'none';
+  document.getElementById('catch-actions-new').style.display = isNew ? 'block' : 'none';
+  document.getElementById('catch-actions-owned').style.display = isNew ? 'none' : 'block';
   
   const iconContainer = document.getElementById('catch-icon-container');
   if (p.spriteKey) {
-    iconContainer.innerHTML = `<img src="${p.spriteKey}.png" alt="${p.name}" style="width: 110px; height: 110px; object-fit: contain; animation: bounce 1s infinite alternate;">`;
+    iconContainer.innerHTML = `<img src="${p.spriteKey}.png" alt="${p.name}" style="width: 120px; height: 120px; object-fit: contain; animation: bounce 1s infinite alternate;">`;
   } else {
     iconContainer.innerHTML = `<div class="catch-emoji">${p.emoji}</div>`;
   }
 
   document.getElementById('catch-name').innerText = p.name;
   document.getElementById('catch-theme').innerText = `Variante: ${p.theme} (${p.rarity})`;
-  
-  if (p.caught) {
-    document.getElementById('catch-msg').innerText = `"¡Ya tienes esta figurita en tu álbum, pero gracias por los mimos!"`;
-  } else {
-    document.getElementById('catch-msg').innerText = `"${p.msg}"`;
-  }
-  
   document.getElementById('catch-modal').classList.add('active');
 }
 
-function confirmCatch() {
+function closeEncounter() {
+  document.getElementById('catch-modal').classList.remove('active');
+  if (currentSparkleTarget) currentSparkleTarget.destroyVisuals();
+  if (phaserScene) spawnRandomSparkle(phaserScene);
+  currentSparkleTarget = null;
+}
+
+// --- LOGICA DEL QUIZ ---
+function startQuiz() {
+  document.getElementById('catch-modal').classList.remove('active');
+  document.getElementById('quiz-modal').classList.add('active');
+  
+  const p = currentSparkleTarget.characterData;
+  const stars = getRarityStars(p.rarity);
+  
+  // Dificultad basada en rareza
+  quizCorrectRequired = stars; // 1 a 4 preguntas correctas necesarias
+  quizMaxTime = 15 - ((stars - 1) * 2); // De 15s (Común) a 9s (Secreta)
+  
+  // Obtener preguntas (mezclar banco específico + genéricas)
+  let bank = QUESTION_BANK[p.name] ? [...QUESTION_BANK[p.name]] : [];
+  bank = bank.concat([...GENERIC_QUESTIONS]);
+  quizQuestions = shuffleArray(bank).slice(0, quizCorrectRequired + 1); // Extraemos las necesarias
+  
+  quizCurrentQIndex = 0;
+  loadQuizQuestion();
+}
+
+function loadQuizQuestion() {
+  if (quizCurrentQIndex >= quizCorrectRequired) {
+    return catchSuccess(); // ¡Ganó el quiz!
+  }
+  
+  const qData = quizQuestions[quizCurrentQIndex];
+  document.getElementById('quiz-header-text').innerText = `Pregunta ${quizCurrentQIndex + 1} de ${quizCorrectRequired}`;
+  document.getElementById('quiz-question').innerText = qData.q;
+  
+  // Mezclar opciones pero recordar cuál es la correcta
+  let options = qData.a.map((text, idx) => ({ text, isCorrect: idx === qData.correct }));
+  options = shuffleArray(options);
+  
+  const grid = document.getElementById('quiz-answers');
+  grid.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerText = opt.text;
+    btn.onclick = () => handleQuizAnswer(opt.isCorrect);
+    grid.appendChild(btn);
+  });
+  
+  // Iniciar timer
+  quizTimeLeft = quizMaxTime;
+  updateTimerUI();
+  clearInterval(quizTimerInterval);
+  quizTimerInterval = setInterval(() => {
+    quizTimeLeft--;
+    updateTimerUI();
+    if (quizTimeLeft <= 0) {
+      clearInterval(quizTimerInterval);
+      catchFail(); // Tiempo agotado
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const fill = document.getElementById('quiz-timer-fill');
+  const percent = (quizTimeLeft / quizMaxTime) * 100;
+  fill.style.width = `${percent}%`;
+  fill.style.background = percent < 30 ? '#d32f2f' : '#ff477e';
+}
+
+function handleQuizAnswer(isCorrect) {
+  clearInterval(quizTimerInterval);
+  if (isCorrect) {
+    quizCurrentQIndex++;
+    loadQuizQuestion();
+  } else {
+    catchFail(); // Error en el quiz
+  }
+}
+
+// --- LOGICA CARTAS (MEMORIA) ---
+function startMinigame() {
+  document.getElementById('catch-modal').classList.remove('active');
+  document.getElementById('minigame-modal').classList.add('active');
+  
+  const p = currentSparkleTarget.characterData;
+  const stars = getRarityStars(p.rarity);
+  
+  // Configuración por rareza
+  let totalCards = 9;
+  cardTargetMatches = 3;
+  let cols = 3;
+  
+  if (stars === 2) { totalCards = 12; cardTargetMatches = 4; cols = 3; }
+  else if (stars === 3) { totalCards = 16; cardTargetMatches = 5; cols = 4; }
+  else if (stars === 4) { totalCards = 20; cardTargetMatches = 6; cols = 4; }
+  
+  cardMatches = 0;
+  cardMistakes = 0;
+  isAnimatingCards = false;
+  
+  updateMinigameUI();
+  
+  const grid = document.getElementById('cards-grid');
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.innerHTML = '';
+  
+  // Preparar mazo: N cartas correctas, (Total-N) cartas incorrectas
+  let deck = Array(cardTargetMatches).fill(true).concat(Array(totalCards - cardTargetMatches).fill(false));
+  deck = shuffleArray(deck);
+  
+  const targetHTML = p.spriteKey ? `<img src="${p.spriteKey}.png">` : p.emoji;
+  const wrongHTML = `❌`;
+  
+  deck.forEach((isTarget, idx) => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.target = isTarget;
+    card.innerHTML = `<span style="font-size:24px;">❓</span>`;
+    
+    card.onclick = () => {
+      if (isAnimatingCards || card.classList.contains('flipped')) return;
+      
+      card.classList.add('flipped');
+      if (isTarget) {
+        card.innerHTML = targetHTML;
+        cardMatches++;
+        updateMinigameUI();
+        if (cardMatches >= cardTargetMatches) {
+          isAnimatingCards = true;
+          setTimeout(catchSuccess, 800);
+        }
+      } else {
+        card.innerHTML = wrongHTML;
+        card.style.background = '#ffebee';
+        cardMistakes++;
+        updateMinigameUI();
+        if (cardMistakes >= 3) {
+          isAnimatingCards = true;
+          setTimeout(catchFail, 800);
+        }
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+function updateMinigameUI() {
+  document.getElementById('cards-target-text').innerText = `Encuentra: ${cardMatches}/${cardTargetMatches}`;
+  document.getElementById('cards-mistakes-text').innerText = `Errores: ${cardMistakes}/3`;
+}
+
+// --- RESOLUCIÓN ---
+function catchSuccess() {
+  clearInterval(quizTimerInterval);
+  document.getElementById('quiz-modal').classList.remove('active');
+  document.getElementById('minigame-modal').classList.remove('active');
+  
   if (currentSparkleTarget) {
     const p = currentSparkleTarget.characterData;
     p.caught = true;
     const caughtIds = SANRIO_DATABASE.filter(x => x.caught).map(x => x.id);
-    localStorage.setItem('sanrio_catch_dex_v2', JSON.stringify(caughtIds));
+    localStorage.setItem('sanrio_catch_dex_v3', JSON.stringify(caughtIds));
     
     currentSparkleTarget.destroyVisuals();
     updateHUD();
-    
-    if (phaserScene) {
-      spawnRandomSparkle(phaserScene);
-    }
+    if (phaserScene) spawnRandomSparkle(phaserScene);
   }
-  document.getElementById('catch-modal').classList.remove('active');
   currentSparkleTarget = null;
+  alert("¡Captura Exitosa! ✨\nEl personaje ha sido guardado en tu colección.");
+}
+
+function catchFail() {
+  clearInterval(quizTimerInterval);
+  document.getElementById('quiz-modal').classList.remove('active');
+  document.getElementById('minigame-modal').classList.remove('active');
+  
+  if (currentSparkleTarget) {
+    currentSparkleTarget.destroyVisuals();
+    if (phaserScene) spawnRandomSparkle(phaserScene);
+  }
+  currentSparkleTarget = null;
+  alert("¡Oh no! 💨\nTe equivocaste o se acabó el tiempo y el personaje huyó.");
 }
 
 // -------------------------------------------------------------
@@ -242,7 +520,6 @@ let worldWidth = 3000, worldHeight = 3000;
 let joystickBase, joystickThumb, isDragging = false;
 
 function preload() {
-  // Cargar las 14 imágenes base
   this.load.image('HelloKitty', 'HelloKitty.png');
   this.load.image('Cinnamon', 'Cinnamon.png');
   this.load.image('MyMelody', 'MyMelody.png');
@@ -275,9 +552,7 @@ function preload() {
 
 function create() {
   phaserScene = this;
-  
   this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
-  
   this.add.tileSprite(worldWidth/2, worldHeight/2, worldWidth, worldHeight, 'tileGrass');
   this.add.rectangle(worldWidth/2, worldHeight/2, worldWidth, worldHeight).setStrokeStyle(16, 0xff9ebb);
 
@@ -290,15 +565,14 @@ function create() {
   this.cameras.main.setZoom(1.1);
 
   sparklesGroup = [];
-  for(let i = 0; i < 15; i++) {
-    spawnRandomSparkle(this);
-  }
+  for(let i = 0; i < 15; i++) { spawnRandomSparkle(this); }
 
   joystickBase = this.add.circle(0, 0, 60, 0xffb3c6, 0.5).setScrollFactor(0).setDepth(100).setVisible(false);
   joystickThumb = this.add.circle(0, 0, 30, 0xff758c, 0.9).setScrollFactor(0).setDepth(101).setVisible(false);
 
   this.input.on('pointerdown', (pointer) => {
-    if (document.getElementById('catch-modal').classList.contains('active') || document.getElementById('dex-modal').classList.contains('active')) return;
+    // Si algún modal activo, bloquear movimiento
+    if (document.querySelectorAll('.modal-overlay.active, .catch-modal.active, .game-modal.active').length > 0) return;
     isDragging = true;
     joystickBase.setPosition(pointer.x, pointer.y).setVisible(true);
     joystickThumb.setPosition(pointer.x, pointer.y).setVisible(true);
@@ -306,27 +580,17 @@ function create() {
 
   this.input.on('pointermove', (pointer) => {
     if (!isDragging) return;
-    
     let angle = Phaser.Math.Angle.Between(joystickBase.x, joystickBase.y, pointer.x, pointer.y);
     let distance = Phaser.Math.Distance.Between(joystickBase.x, joystickBase.y, pointer.x, pointer.y);
     let maxDist = 60; 
-    
     if (distance > maxDist) distance = maxDist;
-    
     joystickThumb.x = joystickBase.x + Math.cos(angle) * distance;
     joystickThumb.y = joystickBase.y + Math.sin(angle) * distance;
-    
-    let speedX = (distance / maxDist) * Math.cos(angle);
-    let speedY = (distance / maxDist) * Math.sin(angle);
-    
-    player.setVelocity(speedX * 300, speedY * 300); 
+    player.setVelocity((distance/maxDist) * Math.cos(angle) * 300, (distance/maxDist) * Math.sin(angle) * 300); 
   });
 
   this.input.on('pointerup', () => {
-    isDragging = false;
-    joystickBase.setVisible(false);
-    joystickThumb.setVisible(false);
-    player.setVelocity(0, 0);
+    isDragging = false; joystickBase.setVisible(false); joystickThumb.setVisible(false); player.setVelocity(0, 0);
   });
 
   updateHUD();
@@ -343,12 +607,7 @@ function spawnRandomSparkle(scene) {
   const starText = scene.add.text(sx, sy, '✨', { fontSize: '26px' }).setOrigin(0.5);
   const aura = scene.add.circle(sx, sy, 22, auraColor, 0.4);
 
-  scene.tweens.add({
-    targets: [starText, aura],
-    scale: { from: 0.8, to: 1.3 },
-    alpha: { from: 0.4, to: 1 },
-    duration: 800, yoyo: true, repeat: -1
-  });
+  scene.tweens.add({ targets: [starText, aura], scale: { from: 0.8, to: 1.3 }, alpha: { from: 0.4, to: 1 }, duration: 800, yoyo: true, repeat: -1 });
 
   let lifetime = 60000; 
   if (randomChar.rarity.includes('★★★★')) lifetime = 15000; 
@@ -356,12 +615,9 @@ function spawnRandomSparkle(scene) {
   else if (randomChar.rarity.includes('★★')) lifetime = 45000; 
 
   const sparkleObj = {
-    x: sx, y: sy,
-    characterData: randomChar,
-    timer: null,
+    x: sx, y: sy, characterData: randomChar, timer: null,
     destroyVisuals: function() {
-      starText.destroy();
-      aura.destroy();
+      starText.destroy(); aura.destroy();
       if (this.timer) this.timer.remove(); 
       const idx = sparklesGroup.indexOf(this);
       if (idx > -1) sparklesGroup.splice(idx, 1);
@@ -378,19 +634,15 @@ function spawnRandomSparkle(scene) {
 
 function update() {
   if (!player) return;
-
-  if (document.getElementById('catch-modal').classList.contains('active')) {
-    player.setVelocity(0, 0);
-    return;
+  
+  if (document.querySelectorAll('.modal-overlay.active, .catch-modal.active, .game-modal.active').length > 0) {
+    player.setVelocity(0, 0); return;
   }
 
   sparklesGroup.forEach(sparkle => {
     const dist = Phaser.Math.Distance.Between(player.x, player.y, sparkle.x, sparkle.y);
     if (dist < 48) {
-      isDragging = false;
-      joystickBase.setVisible(false);
-      joystickThumb.setVisible(false);
-      player.setVelocity(0, 0);
+      isDragging = false; joystickBase.setVisible(false); joystickThumb.setVisible(false); player.setVelocity(0, 0);
       showCatchScreen(sparkle);
     }
   });
