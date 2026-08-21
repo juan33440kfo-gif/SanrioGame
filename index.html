@@ -30,7 +30,6 @@
     .dex-header h2 { font-family: 'Mali', cursive; font-size: 24px; color: #ff9ebb; text-shadow: 0 2px 4px rgba(0,0,0,0.3); margin: 0; }
     .close-btn { background: #ff5e7e; color: white; border: 2px solid white; width: 34px; height: 34px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
     
-    /* Pestañas del Álbum */
     .dex-tabs { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
     .dex-tabs::-webkit-scrollbar { display: none; }
     .dex-tab { background: #ffe3ec; border: 2px solid #ff9ebb; border-radius: 15px; padding: 6px 14px; font-family: 'Quicksand', sans-serif; font-weight: 800; font-size: 13px; color: #ff5e7e; cursor: pointer; white-space: nowrap; transition: 0.2s; }
@@ -66,9 +65,7 @@
     </div>
     
     <!-- Pestañas de Colecciones -->
-    <div class="dex-tabs" id="dex-tabs-container">
-      <!-- Se generan con JavaScript -->
-    </div>
+    <div class="dex-tabs" id="dex-tabs-container"></div>
 
     <!-- Cuadrícula de Figuritas -->
     <div id="dex-grid" class="dex-grid"></div>
@@ -88,23 +85,22 @@
 </div>
 
 <script>
-// BASE DE DATOS AMPLIADA Y CLASIFICADA POR "collection"
 const SANRIO_DATABASE = [
-  // --- COLECCIÓN BASE (Los 14 de tu imagen) ---
+  // --- COLECCIÓN BASE ---
   { id: 'base_hk', collection: 'Base', name: 'Hello Kitty', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🎀', spriteKey: 'HelloKitty', caught: false, msg: '¡Te entrego mi corazón!' },
   { id: 'base_cinna', collection: 'Base', name: 'Cinnamoroll', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '☕', spriteKey: 'Cinnamon', caught: false, msg: '¡Volando hacia ti!' },
-  { id: 'base_melody', collection: 'Base', name: 'My Melody', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🌸', spriteKey: null, caught: false, msg: '¡Una flor para ti!' },
-  { id: 'base_purin', collection: 'Base', name: 'Pompompurin', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🍮', spriteKey: null, caught: false, msg: '¡Un abrazo blandito!' },
+  { id: 'base_melody', collection: 'Base', name: 'My Melody', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🌸', spriteKey: 'MyMelody', caught: false, msg: '¡Una flor para ti!' },
+  { id: 'base_purin', collection: 'Base', name: 'Pompompurin', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🍮', spriteKey: 'Pompompurin', caught: false, msg: '¡Un abrazo blandito!' },
   { id: 'base_kuromi', collection: 'Base', name: 'Kuromi', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '💀', spriteKey: 'Kuromi', caught: false, msg: '¡También tengo mi lado dulce!' },
-  { id: 'base_keroppi', collection: 'Base', name: 'Keroppi', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🐸', spriteKey: null, caught: false, msg: '¡Saltando de alegría!' },
-  { id: 'base_badtz', collection: 'Base', name: 'Badtz-Maru', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '🐧', spriteKey: null, caught: false, msg: 'Hmpf... toma esto.' },
-  { id: 'base_lts', collection: 'Base', name: 'Little Twin Stars', theme: 'Corazón Mágico', rarity: '★★ Rara', emoji: '⭐', spriteKey: null, caught: false, msg: '¡Amor desde las estrellas!' },
-  { id: 'base_tuxedo', collection: 'Base', name: 'Tuxedosam', theme: 'Corazón Elegante', rarity: '★★ Rara', emoji: '🎩', spriteKey: null, caught: false, msg: '¡Siempre tan distinguido!' },
-  { id: 'base_pochacco', collection: 'Base', name: 'Pochacco', theme: 'Corazón Deportivo', rarity: '★★ Rara', emoji: '🐶', spriteKey: null, caught: false, msg: '¡Corrí hasta aquí para verte!' },
-  { id: 'base_hangyo', collection: 'Base', name: 'Hangyodon', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🐟', spriteKey: null, caught: false, msg: '¡Glub glub... te quiero!' },
-  { id: 'base_pekkle', collection: 'Base', name: 'Pekkle', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🦆', spriteKey: null, caught: false, msg: '¡Bailando de felicidad!' },
-  { id: 'base_gudetama', collection: 'Base', name: 'Gudetama', theme: 'Corazón Perezoso', rarity: '★★★ Épica', emoji: '🍳', spriteKey: null, caught: false, msg: 'Ugh... toma mi corazón, supongo.' },
-  { id: 'base_aggretsuko', collection: 'Base', name: 'Aggretsuko', theme: 'Corazón Furioso', rarity: '★★★★ Secreta', emoji: '🎸', spriteKey: null, caught: false, msg: '¡DEJA DE TRABAJAR Y ABRÁZAME!' },
+  { id: 'base_keroppi', collection: 'Base', name: 'Keroppi', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🐸', spriteKey: 'Keroppi', caught: false, msg: '¡Saltando de alegría!' },
+  { id: 'base_badtz', collection: 'Base', name: 'Badtz-Maru', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '🐧', spriteKey: 'BadtzMaru', caught: false, msg: 'Hmpf... toma esto.' },
+  { id: 'base_lts', collection: 'Base', name: 'Little Twin Stars', theme: 'Corazón Mágico', rarity: '★★ Rara', emoji: '⭐', spriteKey: 'LittleTwinStars', caught: false, msg: '¡Amor desde las estrellas!' },
+  { id: 'base_tuxedo', collection: 'Base', name: 'Tuxedosam', theme: 'Corazón Elegante', rarity: '★★ Rara', emoji: '🎩', spriteKey: 'Tuxedosam', caught: false, msg: '¡Siempre tan distinguido!' },
+  { id: 'base_pochacco', collection: 'Base', name: 'Pochacco', theme: 'Corazón Deportivo', rarity: '★★ Rara', emoji: '🐶', spriteKey: 'Pochacco', caught: false, msg: '¡Corrí hasta aquí para verte!' },
+  { id: 'base_hangyo', collection: 'Base', name: 'Hangyodon', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🐟', spriteKey: 'Hangyodon', caught: false, msg: '¡Glub glub... te quiero!' },
+  { id: 'base_pekkle', collection: 'Base', name: 'Pekkle', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🦆', spriteKey: 'Pekkle', caught: false, msg: '¡Bailando de felicidad!' },
+  { id: 'base_gudetama', collection: 'Base', name: 'Gudetama', theme: 'Corazón Perezoso', rarity: '★★★ Épica', emoji: '🍳', spriteKey: 'Gudetama', caught: false, msg: 'Ugh... toma mi corazón, supongo.' },
+  { id: 'base_aggretsuko', collection: 'Base', name: 'Aggretsuko', theme: 'Corazón Furioso', rarity: '★★★★ Secreta', emoji: '🎸', spriteKey: 'Aggretsuko', caught: false, msg: '¡DEJA DE TRABAJAR Y ABRÁZAME!' },
 
   // --- COLECCIÓN HALLOWEEN ---
   { id: 'hw_kuromi', collection: 'Halloween 🎃', name: 'Kuromi', theme: 'Brujita Mágica', rarity: '★★ Rara', emoji: '🔮', spriteKey: null, caught: false, msg: '¡Dulce o truco!' },
@@ -118,11 +114,9 @@ const SANRIO_DATABASE = [
   { id: 'beach_melody', collection: 'Playa 🏖️', name: 'My Melody', theme: 'Sirena Pastel', rarity: '★★★★ Secreta', emoji: '🧜‍♀️', spriteKey: null, caught: false, msg: '¡Nadando en el mar de fresa!' }
 ];
 
-// Lógica de Pestañas del Álbum
 const collectionsList = [...new Set(SANRIO_DATABASE.map(item => item.collection))];
 let currentCollection = collectionsList[0];
 
-// Cargar guardado
 let savedDex = localStorage.getItem('sanrio_catch_dex_v2');
 if (savedDex) {
   try {
@@ -145,8 +139,8 @@ function renderTabs() {
     btn.innerText = col;
     btn.onclick = () => {
       currentCollection = col;
-      renderTabs(); // Actualiza estilos activos
-      renderDexGrid(); // Muestra las figuritas correctas
+      renderTabs();
+      renderDexGrid();
     };
     tabsContainer.appendChild(btn);
   });
@@ -167,7 +161,6 @@ function renderDexGrid() {
   const grid = document.getElementById('dex-grid');
   grid.innerHTML = '';
   
-  // Filtrar solo los personajes de la pestaña actual
   const currentItems = SANRIO_DATABASE.filter(item => item.collection === currentCollection);
   
   currentItems.forEach(item => {
@@ -249,9 +242,21 @@ let worldWidth = 3000, worldHeight = 3000;
 let joystickBase, joystickThumb, isDragging = false;
 
 function preload() {
+  // Cargar las 14 imágenes base
   this.load.image('HelloKitty', 'HelloKitty.png');
-  this.load.image('Kuromi', 'Kuromi.png');
   this.load.image('Cinnamon', 'Cinnamon.png');
+  this.load.image('MyMelody', 'MyMelody.png');
+  this.load.image('Pompompurin', 'Pompompurin.png');
+  this.load.image('Kuromi', 'Kuromi.png');
+  this.load.image('Keroppi', 'Keroppi.png');
+  this.load.image('BadtzMaru', 'BadtzMaru.png');
+  this.load.image('LittleTwinStars', 'LittleTwinStars.png');
+  this.load.image('Tuxedosam', 'Tuxedosam.png');
+  this.load.image('Pochacco', 'Pochacco.png');
+  this.load.image('Hangyodon', 'Hangyodon.png');
+  this.load.image('Pekkle', 'Pekkle.png');
+  this.load.image('Gudetama', 'Gudetama.png');
+  this.load.image('Aggretsuko', 'Aggretsuko.png');
 
   let bgCanvas = this.textures.createCanvas('tileGrass', 64, 64);
   let ctx = bgCanvas.context;
