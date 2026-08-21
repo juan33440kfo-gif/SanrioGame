@@ -4,244 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sanrio Catch Adventure ✨</title>
-  <!-- Phaser 3 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-  <!-- Google Fonts kawaii -->
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&family=Mali:wght@600;800&display=swap" rel="stylesheet">
   
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body {
-      background-color: #2b1f3d;
-      font-family: 'Quicksand', sans-serif;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      width: 100vw;
-    }
-    #game-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      max-width: 480px;
-      max-height: 860px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      border-radius: 20px;
-      overflow: hidden;
-      background: #7ec8a0;
-    }
-
-    /* Interfaz de Usuario Superpuesta (HUD) */
-    .hud-btn {
-      position: absolute;
-      top: 16px;
-      padding: 10px 18px;
-      background: linear-gradient(135deg, #ff7eb3, #ff758c);
-      color: white;
-      border: 3px solid #fff;
-      border-radius: 25px;
-      font-family: 'Mali', cursive;
-      font-size: 15px;
-      font-weight: 800;
-      box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
-      cursor: pointer;
-      z-index: 10;
-      transition: transform 0.1s ease;
-    }
-    .hud-btn:active {
-      transform: scale(0.92);
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #2b1f3d; font-family: 'Quicksand', sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; }
+    #game-container { position: relative; width: 100%; height: 100%; max-width: 480px; max-height: 860px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border-radius: 20px; overflow: hidden; background: #7ec8a0; }
+    
+    .hud-btn { position: absolute; top: 16px; padding: 10px 18px; background: linear-gradient(135deg, #ff7eb3, #ff758c); color: white; border: 3px solid #fff; border-radius: 25px; font-family: 'Mali', cursive; font-size: 15px; font-weight: 800; box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4); cursor: pointer; z-index: 10; transition: transform 0.1s ease; }
+    .hud-btn:active { transform: scale(0.92); }
     #dex-btn { right: 16px; }
-    #stats-badge {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(255, 255, 255, 0.9);
-      color: #ff5e7e;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-weight: 900;
-      font-size: 14px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      z-index: 10;
-    }
-
-    /* Joystick virtual visual hint */
-    .joystick-zone {
-      position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: rgba(255,255,255,0.7);
-      font-size: 12px;
-      background: rgba(0,0,0,0.3);
-      padding: 6px 14px;
-      border-radius: 12px;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    /* Modal SanrioDex */
-    .modal-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(30, 15, 45, 0.85);
-      backdrop-filter: blur(6px);
-      z-index: 100;
-      display: none;
-      flex-direction: column;
-      padding: 20px;
-      animation: fadeIn 0.25s ease;
-    }
-    .modal-overlay.active {
-      display: flex;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .dex-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      color: #ffe6eb;
-    }
-    .dex-header h2 {
-      font-family: 'Mali', cursive;
-      font-size: 24px;
-      color: #ff9ebb;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-    .close-btn {
-      background: #ff5e7e;
-      color: white;
-      border: 2px solid white;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .dex-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      overflow-y: auto;
-      padding-bottom: 20px;
-    }
-    .dex-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 12px;
-      text-align: center;
-      position: relative;
-      border: 3px solid #ffb6c1;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      transition: 0.2s;
-    }
-    .dex-card.locked {
-      background: #e0d8ea;
-      border-color: #baa3cc;
-      filter: grayscale(0.9);
-      opacity: 0.7;
-    }
-    .card-rarity {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 11px;
-      background: #ffe3ec;
-      padding: 2px 6px;
-      border-radius: 8px;
-      color: #ff477e;
-      font-weight: 700;
-    }
-    .card-icon {
-      font-size: 42px;
-      margin: 8px 0;
-      display: block;
-    }
-    .card-name {
-      font-size: 14px;
-      font-weight: 800;
-      color: #4a284e;
-    }
-    .card-theme {
-      font-size: 11px;
-      color: #8c7391;
-      margin-top: 2px;
-    }
-    .card-note {
-      font-size: 11px;
-      color: #ff5e7e;
-      margin-top: 6px;
-      background: #fff0f5;
-      padding: 4px;
-      border-radius: 8px;
-      font-style: italic;
-    }
-
-    /* Modal de Captura Épica */
-    .catch-modal {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      z-index: 150;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 24px;
-      text-align: center;
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .catch-modal.active {
-      display: flex;
-    }
-    @keyframes popIn {
-      from { transform: scale(0.6); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    .catch-card {
-      background: linear-gradient(145deg, #ffffff, #fff2f6);
-      border: 4px solid #ff758c;
-      border-radius: 24px;
-      padding: 25px;
-      width: 85%;
-      box-shadow: 0 10px 30px rgba(255, 117, 140, 0.5);
-    }
-    .catch-emoji {
-      font-size: 72px;
-      animation: bounce 1s infinite alternate;
-    }
-    @keyframes bounce {
-      from { transform: translateY(0); }
-      to { transform: translateY(-10px); }
-    }
-    .catch-btn {
-      margin-top: 18px;
-      background: linear-gradient(135deg, #42e695, #3bb2b8);
-      color: white;
-      border: none;
-      padding: 12px 28px;
-      border-radius: 25px;
-      font-family: 'Mali', cursive;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(66, 230, 149, 0.4);
-    }
+    #stats-badge { position: absolute; top: 16px; left: 16px; background: rgba(255, 255, 255, 0.9); color: #ff5e7e; padding: 8px 14px; border-radius: 20px; font-weight: 900; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
+    .joystick-zone { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.4); padding: 8px 16px; border-radius: 12px; pointer-events: none; z-index: 5; text-align: center; width: 80%; }
+    
+    .modal-overlay, .catch-modal { position: absolute; inset: 0; z-index: 100; display: none; flex-direction: column; padding: 20px; animation: fadeIn 0.25s ease; }
+    .modal-overlay { background: rgba(30, 15, 45, 0.85); backdrop-filter: blur(6px); }
+    .catch-modal { background: rgba(0, 0, 0, 0.75); justify-content: center; align-items: center; text-align: center; z-index: 150; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .modal-overlay.active, .catch-modal.active { display: flex; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    
+    .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #ffe6eb; }
+    .dex-header h2 { font-family: 'Mali', cursive; font-size: 24px; color: #ff9ebb; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .close-btn { background: #ff5e7e; color: white; border: 2px solid white; width: 34px; height: 34px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; }
+    .dex-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; overflow-y: auto; padding-bottom: 20px; }
+    .dex-card { background: #fff; border-radius: 18px; padding: 12px; text-align: center; position: relative; border: 3px solid #ffb6c1; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: 0.2s; }
+    .dex-card.locked { background: #e0d8ea; border-color: #baa3cc; filter: grayscale(0.9); opacity: 0.7; }
+    .card-rarity { position: absolute; top: 8px; right: 8px; font-size: 11px; background: #ffe3ec; padding: 2px 6px; border-radius: 8px; color: #ff477e; font-weight: 700; }
+    .card-icon { font-size: 42px; margin: 8px 0; display: block; }
+    .card-name { font-size: 14px; font-weight: 800; color: #4a284e; }
+    .card-theme { font-size: 11px; color: #8c7391; margin-top: 2px; }
+    .card-note { font-size: 11px; color: #ff5e7e; margin-top: 6px; background: #fff0f5; padding: 4px; border-radius: 8px; font-style: italic; }
+    
+    .catch-card { background: linear-gradient(145deg, #ffffff, #fff2f6); border: 4px solid #ff758c; border-radius: 24px; padding: 25px; width: 85%; box-shadow: 0 10px 30px rgba(255, 117, 140, 0.5); }
+    .catch-emoji { font-size: 72px; animation: bounce 1s infinite alternate; }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+    .catch-btn { margin-top: 18px; background: linear-gradient(135deg, #42e695, #3bb2b8); color: white; border: none; padding: 12px 28px; border-radius: 25px; font-family: 'Mali', cursive; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(66, 230, 149, 0.4); }
   </style>
 </head>
 <body>
@@ -249,7 +49,7 @@
 <div id="game-container">
   <div id="stats-badge">🌸 SanrioDex: <span id="dex-count">0/8</span></div>
   <button id="dex-btn" class="hud-btn" onclick="toggleDex(true)">📖 Álbum</button>
-  <div class="joystick-zone">🕹️ Toca / Arrastra en la pantalla para moverte</div>
+  <div class="joystick-zone">🕹️ Toca y arrastra en cualquier parte para usar el Joystick</div>
 
   <!-- Modal SanrioDex -->
   <div id="dex-modal" class="modal-overlay">
@@ -264,9 +64,7 @@
   <div id="catch-modal" class="catch-modal">
     <div class="catch-card">
       <div id="catch-rarity-tag" style="font-weight:900; color:#ff477e; margin-bottom:6px;">✨ ¡DESTELlO ENCONTRADO!</div>
-      <!-- Aquí se inyectará el emoji o la imagen PNG -->
       <div id="catch-icon-container" style="min-height: 100px; display: flex; justify-content: center; align-items: center;"></div>
-      
       <h3 id="catch-name" style="font-family:'Mali', cursive; font-size:22px; color:#2b1f3d; margin: 10px 0 4px 0;">Hello Kitty</h3>
       <p id="catch-theme" style="font-size:13px; color:#8a6d91; font-weight:700; margin-bottom:12px;">Edición San Valentín</p>
       <p id="catch-msg" style="font-size:12px; color:#555; background:#fff; padding:8px; border-radius:10px; border:1px dashed #ff9ebb;">"¡Te encontré explorando el bosque dulce!"</p>
@@ -276,7 +74,6 @@
 </div>
 
 <script>
-// Base de datos actualizada con los spriteKeys para las imágenes PNG
 const SANRIO_DATABASE = [
   { id: 'hk_classic', name: 'Hello Kitty', theme: 'Clásica', rarity: '★ Común', emoji: '🎀', spriteKey: 'HelloKitty', color: '#ffb3c6', caught: false, msg: '¡Siempre tan tierna y dulce!' },
   { id: 'kuromi_witch', name: 'Kuromi', theme: 'Brujita Mágica', rarity: '★★ Rara', emoji: '🔮', spriteKey: 'Kuromi', color: '#b388eb', caught: false, msg: '¡Haciendo travesuras mágicas por el mapa!' },
@@ -303,12 +100,8 @@ function updateHUD() {
 
 function toggleDex(show) {
   const modal = document.getElementById('dex-modal');
-  if (show) {
-    renderDexGrid();
-    modal.classList.add('active');
-  } else {
-    modal.classList.remove('active');
-  }
+  if (show) { renderDexGrid(); modal.classList.add('active'); } 
+  else { modal.classList.remove('active'); }
 }
 
 function renderDexGrid() {
@@ -317,8 +110,6 @@ function renderDexGrid() {
   SANRIO_DATABASE.forEach(item => {
     const card = document.createElement('div');
     card.className = `dex-card ${item.caught ? '' : 'locked'}`;
-    
-    // Lógica para mostrar la imagen PNG en la Dex si existe, o el Emoji si no.
     let iconHTML = `<span class="card-icon">❓</span>`;
     if (item.caught) {
       if (item.spriteKey) {
@@ -327,26 +118,19 @@ function renderDexGrid() {
         iconHTML = `<span class="card-icon">${item.emoji}</span>`;
       }
     }
-
-    card.innerHTML = `
-      <span class="card-rarity">${item.caught ? item.rarity : '???'}</span>
-      ${iconHTML}
-      <div class="card-name">${item.caught ? item.name : 'Desconocido'}</div>
-      <div class="card-theme">${item.caught ? item.theme : 'Sigue explorando...'}</div>
-      ${item.caught ? `<div class="card-note">${item.msg}</div>` : ''}
-    `;
+    card.innerHTML = `<span class="card-rarity">${item.caught ? item.rarity : '???'}</span> ${iconHTML} <div class="card-name">${item.caught ? item.name : 'Desconocido'}</div> <div class="card-theme">${item.caught ? item.theme : 'Sigue explorando...'}</div> ${item.caught ? `<div class="card-note">${item.msg}</div>` : ''}`;
     grid.appendChild(card);
   });
 }
 
 let currentSparkleTarget = null;
+let phaserScene = null;
 
 function showCatchScreen(sparkleObj) {
   currentSparkleTarget = sparkleObj;
   const p = sparkleObj.characterData;
   document.getElementById('catch-rarity-tag').innerText = `✨ ${p.rarity.toUpperCase()}`;
   
-  // Mostrar Imagen PNG o Emoji en la pantalla de captura
   const iconContainer = document.getElementById('catch-icon-container');
   if (p.spriteKey) {
     iconContainer.innerHTML = `<img src="${p.spriteKey}.png" alt="${p.name}" style="width: 110px; height: 110px; object-fit: contain; animation: bounce 1s infinite alternate;">`;
@@ -356,7 +140,13 @@ function showCatchScreen(sparkleObj) {
 
   document.getElementById('catch-name').innerText = p.name;
   document.getElementById('catch-theme').innerText = `Variante: ${p.theme}`;
-  document.getElementById('catch-msg').innerText = `"${p.msg}"`;
+  
+  if (p.caught) {
+    document.getElementById('catch-msg').innerText = `"¡Ya tienes a este personaje en tu álbum, pero gracias por los mimos!"`;
+  } else {
+    document.getElementById('catch-msg').innerText = `"${p.msg}"`;
+  }
+  
   document.getElementById('catch-modal').classList.add('active');
 }
 
@@ -366,83 +156,70 @@ function confirmCatch() {
     p.caught = true;
     const caughtIds = SANRIO_DATABASE.filter(x => x.caught).map(x => x.id);
     localStorage.setItem('sanrio_catch_dex', JSON.stringify(caughtIds));
+    
+    // Destruye el destello actual y frena su temporizador
     currentSparkleTarget.destroyVisuals();
     updateHUD();
+    
+    // Al atrapar uno, generamos otro nuevo en el mapa para mantenerlo lleno
+    if (phaserScene) {
+      spawnRandomSparkle(phaserScene);
+    }
   }
   document.getElementById('catch-modal').classList.remove('active');
   currentSparkleTarget = null;
 }
 
 // -------------------------------------------------------------
-// MOTOR PHASER 3
+// MOTOR PHASER 3: MAPA EXPANDIDO + JOYSTICK + SPAWNS DINÁMICOS
 // -------------------------------------------------------------
 const config = {
   type: Phaser.AUTO,
   parent: 'game-container',
   width: window.innerWidth > 480 ? 480 : window.innerWidth,
   height: window.innerHeight > 860 ? 860 : window.innerHeight,
-  physics: {
-    default: 'arcade',
-    arcade: { debug: false }
-  },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  }
+  physics: { default: 'arcade', arcade: { debug: false } },
+  scene: { preload: preload, create: create, update: update }
 };
 
 const game = new Phaser.Game(config);
-let player, cursors, sparklesGroup, pointerTarget = null;
-let worldWidth = 1400, worldHeight = 1400;
+let player, sparklesGroup;
+// MUNDO MÁS GRANDE
+let worldWidth = 3000, worldHeight = 3000;
+let joystickBase, joystickThumb, isDragging = false;
 
 function preload() {
-  // Cargar las imágenes que subiste a GitHub
   this.load.image('HelloKitty', 'HelloKitty.png');
   this.load.image('Kuromi', 'Kuromi.png');
   this.load.image('Cinnamon', 'Cinnamon.png');
 
   let bgCanvas = this.textures.createCanvas('tileGrass', 64, 64);
   let ctx = bgCanvas.context;
-  ctx.fillStyle = '#a8e6cf';
-  ctx.fillRect(0, 0, 64, 64);
-  ctx.fillStyle = '#91dcbf';
-  ctx.beginPath();
-  ctx.arc(16, 16, 8, 0, Math.PI * 2);
-  ctx.arc(48, 48, 10, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.fillStyle = '#a8e6cf'; ctx.fillRect(0, 0, 64, 64);
+  ctx.fillStyle = '#91dcbf'; ctx.beginPath(); ctx.arc(16, 16, 8, 0, Math.PI * 2); ctx.arc(48, 48, 10, 0, Math.PI * 2); ctx.fill();
   bgCanvas.refresh();
 
   let pCanvas = this.textures.createCanvas('playerTexture', 48, 48);
   let pCtx = pCanvas.context;
-  pCtx.fillStyle = '#ffd1dc';
-  pCtx.beginPath();
-  pCtx.arc(24, 24, 18, 0, Math.PI*2); 
-  pCtx.fill();
-  pCtx.fillStyle = '#ff6584'; 
-  pCtx.beginPath();
-  pCtx.arc(16, 12, 6, 0, Math.PI*2);
-  pCtx.arc(32, 12, 6, 0, Math.PI*2);
-  pCtx.arc(24, 12, 4, 0, Math.PI*2);
-  pCtx.fill();
-  pCtx.fillStyle = '#333'; 
-  pCtx.beginPath();
-  pCtx.arc(18, 24, 2.5, 0, Math.PI*2);
-  pCtx.arc(30, 24, 2.5, 0, Math.PI*2);
-  pCtx.fill();
-  pCtx.fillStyle = '#ff8fa3'; 
-  pCtx.beginPath();
-  pCtx.arc(14, 28, 3.5, 0, Math.PI*2);
-  pCtx.arc(34, 28, 3.5, 0, Math.PI*2);
-  pCtx.fill();
+  pCtx.fillStyle = '#ffd1dc'; pCtx.beginPath(); pCtx.arc(24, 24, 18, 0, Math.PI*2); pCtx.fill();
+  pCtx.fillStyle = '#ff6584'; pCtx.beginPath(); pCtx.arc(16, 12, 6, 0, Math.PI*2); pCtx.arc(32, 12, 6, 0, Math.PI*2); pCtx.arc(24, 12, 4, 0, Math.PI*2); pCtx.fill();
+  pCtx.fillStyle = '#333'; pCtx.beginPath(); pCtx.arc(18, 24, 2.5, 0, Math.PI*2); pCtx.arc(30, 24, 2.5, 0, Math.PI*2); pCtx.fill();
+  pCtx.fillStyle = '#ff8fa3'; pCtx.beginPath(); pCtx.arc(14, 28, 3.5, 0, Math.PI*2); pCtx.arc(34, 28, 3.5, 0, Math.PI*2); pCtx.fill();
   pCanvas.refresh();
 }
 
 function create() {
+  phaserScene = this;
+  
+  // Fondo
   this.add.tileSprite(worldWidth/2, worldHeight/2, worldWidth, worldHeight, 'tileGrass');
+  
+  // Borde visual del mapa para que sepa dónde termina
+  this.add.rectangle(worldWidth/2, worldHeight/2, worldWidth, worldHeight).setStrokeStyle(16, 0xff9ebb);
 
+  // Muchas más decoraciones para el mapa gigante
   const decoColors = ['#ffccd5', '#c8b6ff', '#ffd6a5', '#bbf7d0'];
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 150; i++) {
     let rx = Phaser.Math.Between(50, worldWidth - 50);
     let ry = Phaser.Math.Between(50, worldHeight - 50);
     let rColor = decoColors[Phaser.Math.Between(0, decoColors.length - 1)];
@@ -450,6 +227,7 @@ function create() {
     this.add.text(rx, ry, ['🌸', '🍄', '🧁', '🌲', '🍓', '🎀'][Phaser.Math.Between(0, 5)], { fontSize: '22px' }).setOrigin(0.5);
   }
 
+  // Jugador
   player = this.physics.add.sprite(worldWidth / 2, worldHeight / 2, 'playerTexture');
   player.setCollideWorldBounds(true);
   player.body.setSize(30, 30);
@@ -458,83 +236,118 @@ function create() {
   this.cameras.main.startFollow(player, true, 0.08, 0.08);
   this.cameras.main.setZoom(1.1);
 
+  // Spawns dinámicos (Comenzamos con 15 destellos en todo el mapa)
   sparklesGroup = [];
-  spawnSparkles(this);
+  for(let i = 0; i < 15; i++) {
+    spawnRandomSparkle(this);
+  }
+
+  // JOYSTICK VIRTUAL
+  joystickBase = this.add.circle(0, 0, 60, 0xffb3c6, 0.5).setScrollFactor(0).setDepth(100).setVisible(false);
+  joystickThumb = this.add.circle(0, 0, 30, 0xff758c, 0.9).setScrollFactor(0).setDepth(101).setVisible(false);
 
   this.input.on('pointerdown', (pointer) => {
-    if (document.getElementById('catch-modal').classList.contains('active') || 
-        document.getElementById('dex-modal').classList.contains('active')) return;
-    const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-    pointerTarget = new Phaser.Math.Vector2(worldPoint.x, worldPoint.y);
+    if (document.getElementById('catch-modal').classList.contains('active') || document.getElementById('dex-modal').classList.contains('active')) return;
+    isDragging = true;
+    joystickBase.setPosition(pointer.x, pointer.y).setVisible(true);
+    joystickThumb.setPosition(pointer.x, pointer.y).setVisible(true);
   });
 
   this.input.on('pointermove', (pointer) => {
-    if (pointer.isDown) {
-      const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-      pointerTarget = new Phaser.Math.Vector2(worldPoint.x, worldPoint.y);
-    }
+    if (!isDragging) return;
+    
+    let angle = Phaser.Math.Angle.Between(joystickBase.x, joystickBase.y, pointer.x, pointer.y);
+    let distance = Phaser.Math.Distance.Between(joystickBase.x, joystickBase.y, pointer.x, pointer.y);
+    let maxDist = 60; // Radio máximo del joystick
+    
+    if (distance > maxDist) distance = maxDist;
+    
+    joystickThumb.x = joystickBase.x + Math.cos(angle) * distance;
+    joystickThumb.y = joystickBase.y + Math.sin(angle) * distance;
+    
+    // Velocidad basada en qué tan lejos se estira el joystick
+    let speedX = (distance / maxDist) * Math.cos(angle);
+    let speedY = (distance / maxDist) * Math.sin(angle);
+    
+    player.setVelocity(speedX * 300, speedY * 300); // Velocidad máxima 300
   });
 
   this.input.on('pointerup', () => {
-    pointerTarget = null;
+    isDragging = false;
+    joystickBase.setVisible(false);
+    joystickThumb.setVisible(false);
     player.setVelocity(0, 0);
   });
 
   updateHUD();
 }
 
-function spawnSparkles(scene) {
-  SANRIO_DATABASE.forEach((char, index) => {
-    const sx = Phaser.Math.Between(100, worldWidth - 100);
-    const sy = Phaser.Math.Between(100, worldHeight - 100);
+function spawnRandomSparkle(scene) {
+  // Elegir un personaje aleatorio de la base de datos
+  const randomChar = SANRIO_DATABASE[Phaser.Math.Between(0, SANRIO_DATABASE.length - 1)];
 
-    const starText = scene.add.text(sx, sy, '✨', { fontSize: '26px' }).setOrigin(0.5);
-    const aura = scene.add.circle(sx, sy, 22, 0xffeb3b, 0.35);
+  const sx = Phaser.Math.Between(100, worldWidth - 100);
+  const sy = Phaser.Math.Between(100, worldHeight - 100);
 
-    scene.tweens.add({
-      targets: [starText, aura],
-      scale: { from: 0.8, to: 1.3 },
-      alpha: { from: 0.4, to: 1 },
-      duration: 800 + (index * 120),
-      yoyo: true,
-      repeat: -1
-    });
+  // Efectos visuales dependiendo de la rareza
+  let auraColor = 0xffeb3b;
+  if (randomChar.rarity.includes('★★★★')) auraColor = 0xff9800; // Naranja/Dorado para secretos
+  
+  const starText = scene.add.text(sx, sy, '✨', { fontSize: '26px' }).setOrigin(0.5);
+  const aura = scene.add.circle(sx, sy, 22, auraColor, 0.4);
 
-    const sparkleObj = {
-      x: sx,
-      y: sy,
-      characterData: char,
-      starText: starText,
-      aura: aura,
-      destroyVisuals: function() {
-        starText.destroy();
-        aura.destroy();
-        const idx = sparklesGroup.indexOf(this);
-        if (idx > -1) sparklesGroup.splice(idx, 1);
-      }
-    };
-    sparklesGroup.push(sparkleObj);
+  scene.tweens.add({
+    targets: [starText, aura],
+    scale: { from: 0.8, to: 1.3 },
+    alpha: { from: 0.4, to: 1 },
+    duration: 800, yoyo: true, repeat: -1
   });
+
+  // Determinar tiempo de vida antes de desaparecer (en milisegundos)
+  let lifetime = 60000; // 1 min (Común)
+  if (randomChar.rarity.includes('★★★★')) lifetime = 15000; // 15 seg
+  else if (randomChar.rarity.includes('★★★')) lifetime = 30000; // 30 seg
+  else if (randomChar.rarity.includes('★★')) lifetime = 45000; // 45 seg
+
+  const sparkleObj = {
+    x: sx, y: sy,
+    characterData: randomChar,
+    timer: null,
+    destroyVisuals: function() {
+      starText.destroy();
+      aura.destroy();
+      if (this.timer) this.timer.remove(); // Limpiar el temporizador
+      const idx = sparklesGroup.indexOf(this);
+      if (idx > -1) sparklesGroup.splice(idx, 1);
+    }
+  };
+
+  // Temporizador para desaparecer y reaparecer en otro lado
+  sparkleObj.timer = scene.time.delayedCall(lifetime, () => {
+    sparkleObj.destroyVisuals();
+    spawnRandomSparkle(scene); // Reaparece un nuevo personaje aleatorio
+  });
+
+  sparklesGroup.push(sparkleObj);
 }
 
 function update() {
   if (!player) return;
 
-  if (pointerTarget) {
-    const distance = Phaser.Math.Distance.Between(player.x, player.y, pointerTarget.x, pointerTarget.y);
-    if (distance > 10) {
-      this.physics.moveToObject(player, pointerTarget, 220);
-    } else {
-      player.setVelocity(0, 0);
-      pointerTarget = null;
-    }
+  // Si se abre un menú mientras se mueve, detener al jugador
+  if (document.getElementById('catch-modal').classList.contains('active')) {
+    player.setVelocity(0, 0);
+    return;
   }
 
+  // Detección de colisión con los destellos (Radio de captura)
   sparklesGroup.forEach(sparkle => {
     const dist = Phaser.Math.Distance.Between(player.x, player.y, sparkle.x, sparkle.y);
     if (dist < 48) {
+      isDragging = false;
+      joystickBase.setVisible(false);
+      joystickThumb.setVisible(false);
       player.setVelocity(0, 0);
-      pointerTarget = null;
       showCatchScreen(sparkle);
     }
   });
