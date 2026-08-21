@@ -26,9 +26,16 @@
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     
-    .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #ffe6eb; }
-    .dex-header h2 { font-family: 'Mali', cursive; font-size: 24px; color: #ff9ebb; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-    .close-btn { background: #ff5e7e; color: white; border: 2px solid white; width: 34px; height: 34px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; }
+    .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: #ffe6eb; }
+    .dex-header h2 { font-family: 'Mali', cursive; font-size: 24px; color: #ff9ebb; text-shadow: 0 2px 4px rgba(0,0,0,0.3); margin: 0; }
+    .close-btn { background: #ff5e7e; color: white; border: 2px solid white; width: 34px; height: 34px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+    
+    /* Pestañas del Álbum */
+    .dex-tabs { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
+    .dex-tabs::-webkit-scrollbar { display: none; }
+    .dex-tab { background: #ffe3ec; border: 2px solid #ff9ebb; border-radius: 15px; padding: 6px 14px; font-family: 'Quicksand', sans-serif; font-weight: 800; font-size: 13px; color: #ff5e7e; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+    .dex-tab.active { background: #ff5e7e; color: white; border-color: #fff; box-shadow: 0 2px 8px rgba(255, 94, 126, 0.5); }
+
     .dex-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; overflow-y: auto; padding-bottom: 20px; }
     .dex-card { background: #fff; border-radius: 18px; padding: 12px; text-align: center; position: relative; border: 3px solid #ffb6c1; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: 0.2s; }
     .dex-card.locked { background: #e0d8ea; border-color: #baa3cc; filter: grayscale(0.9); opacity: 0.7; }
@@ -47,16 +54,23 @@
 <body>
 
 <div id="game-container">
-  <div id="stats-badge">🌸 SanrioDex: <span id="dex-count">0/8</span></div>
+  <div id="stats-badge">🌸 Álbum: <span id="dex-count">0/0</span></div>
   <button id="dex-btn" class="hud-btn" onclick="toggleDex(true)">📖 Álbum</button>
   <div class="joystick-zone">🕹️ Toca y arrastra en cualquier parte para usar el Joystick</div>
 
-  <!-- Modal SanrioDex -->
+  <!-- Modal SanrioDex (Estilo Álbum) -->
   <div id="dex-modal" class="modal-overlay">
     <div class="dex-header">
-      <h2>🌸 SanrioDex</h2>
+      <h2>🌸 Colección</h2>
       <button class="close-btn" onclick="toggleDex(false)">✕</button>
     </div>
+    
+    <!-- Pestañas de Colecciones -->
+    <div class="dex-tabs" id="dex-tabs-container">
+      <!-- Se generan con JavaScript -->
+    </div>
+
+    <!-- Cuadrícula de Figuritas -->
     <div id="dex-grid" class="dex-grid"></div>
   </div>
 
@@ -74,18 +88,42 @@
 </div>
 
 <script>
+// BASE DE DATOS AMPLIADA Y CLASIFICADA POR "collection"
 const SANRIO_DATABASE = [
-  { id: 'hk_classic', name: 'Hello Kitty', theme: 'Clásica', rarity: '★ Común', emoji: '🎀', spriteKey: 'HelloKitty', color: '#ffb3c6', caught: false, msg: '¡Siempre tan tierna y dulce!' },
-  { id: 'kuromi_witch', name: 'Kuromi', theme: 'Brujita Mágica', rarity: '★★ Rara', emoji: '🔮', spriteKey: 'Kuromi', color: '#b388eb', caught: false, msg: '¡Haciendo travesuras mágicas por el mapa!' },
-  { id: 'cinna_winter', name: 'Cinnamoroll', theme: 'Invierno Calientito', rarity: '★★ Rara', emoji: '☕', spriteKey: 'Cinnamon', color: '#a0c4ff', caught: false, msg: 'Tomando un chocolate caliente con orejitas suaves.' },
-  { id: 'purin_chef', name: 'Pompompurin', theme: 'Chef Pastelero', rarity: '★ Común', emoji: '🍮', spriteKey: null, color: '#ffea79', caught: false, msg: '¡Horneando postrecitos para ti!' },
-  { id: 'melody_spring', name: 'My Melody', theme: 'Flores de Primavera', rarity: '★ Común', emoji: '🌸', spriteKey: null, color: '#ffc6ff', caught: false, msg: 'Recogiendo margaritas en el jardín.' },
-  { id: 'pochacco_sport', name: 'Pochacco', theme: 'Explorador Aventurero', rarity: '★★ Rara', emoji: '🎒', spriteKey: null, color: '#9bf6ff', caught: false, msg: '¡Listo para cualquier caminata juntos!' },
-  { id: 'badtz_rock', name: 'Badtz-Maru', theme: 'Estrella de Rock', rarity: '★★★ Épica', emoji: '🎸', spriteKey: null, color: '#bdb2ff', caught: false, msg: '¡Con toda la actitud rebelde!' },
-  { id: 'hk_angel_gold', name: 'Kitty & Kuromi', theme: 'Alianza Dorada', rarity: '★★★★ Secreta', emoji: '👑', spriteKey: null, color: '#ffd166', caught: false, msg: '¡La variante legendaria más difícil de encontrar!' }
+  // --- COLECCIÓN BASE (Los 14 de tu imagen) ---
+  { id: 'base_hk', collection: 'Base', name: 'Hello Kitty', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🎀', spriteKey: 'HelloKitty', caught: false, msg: '¡Te entrego mi corazón!' },
+  { id: 'base_cinna', collection: 'Base', name: 'Cinnamoroll', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '☕', spriteKey: 'Cinnamon', caught: false, msg: '¡Volando hacia ti!' },
+  { id: 'base_melody', collection: 'Base', name: 'My Melody', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🌸', spriteKey: null, caught: false, msg: '¡Una flor para ti!' },
+  { id: 'base_purin', collection: 'Base', name: 'Pompompurin', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🍮', spriteKey: null, caught: false, msg: '¡Un abrazo blandito!' },
+  { id: 'base_kuromi', collection: 'Base', name: 'Kuromi', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '💀', spriteKey: 'Kuromi', caught: false, msg: '¡También tengo mi lado dulce!' },
+  { id: 'base_keroppi', collection: 'Base', name: 'Keroppi', theme: 'Corazón Dulce', rarity: '★ Común', emoji: '🐸', spriteKey: null, caught: false, msg: '¡Saltando de alegría!' },
+  { id: 'base_badtz', collection: 'Base', name: 'Badtz-Maru', theme: 'Corazón Rebelde', rarity: '★ Común', emoji: '🐧', spriteKey: null, caught: false, msg: 'Hmpf... toma esto.' },
+  { id: 'base_lts', collection: 'Base', name: 'Little Twin Stars', theme: 'Corazón Mágico', rarity: '★★ Rara', emoji: '⭐', spriteKey: null, caught: false, msg: '¡Amor desde las estrellas!' },
+  { id: 'base_tuxedo', collection: 'Base', name: 'Tuxedosam', theme: 'Corazón Elegante', rarity: '★★ Rara', emoji: '🎩', spriteKey: null, caught: false, msg: '¡Siempre tan distinguido!' },
+  { id: 'base_pochacco', collection: 'Base', name: 'Pochacco', theme: 'Corazón Deportivo', rarity: '★★ Rara', emoji: '🐶', spriteKey: null, caught: false, msg: '¡Corrí hasta aquí para verte!' },
+  { id: 'base_hangyo', collection: 'Base', name: 'Hangyodon', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🐟', spriteKey: null, caught: false, msg: '¡Glub glub... te quiero!' },
+  { id: 'base_pekkle', collection: 'Base', name: 'Pekkle', theme: 'Corazón Dulce', rarity: '★★★ Épica', emoji: '🦆', spriteKey: null, caught: false, msg: '¡Bailando de felicidad!' },
+  { id: 'base_gudetama', collection: 'Base', name: 'Gudetama', theme: 'Corazón Perezoso', rarity: '★★★ Épica', emoji: '🍳', spriteKey: null, caught: false, msg: 'Ugh... toma mi corazón, supongo.' },
+  { id: 'base_aggretsuko', collection: 'Base', name: 'Aggretsuko', theme: 'Corazón Furioso', rarity: '★★★★ Secreta', emoji: '🎸', spriteKey: null, caught: false, msg: '¡DEJA DE TRABAJAR Y ABRÁZAME!' },
+
+  // --- COLECCIÓN HALLOWEEN ---
+  { id: 'hw_kuromi', collection: 'Halloween 🎃', name: 'Kuromi', theme: 'Brujita Mágica', rarity: '★★ Rara', emoji: '🔮', spriteKey: null, caught: false, msg: '¡Dulce o truco!' },
+  { id: 'hw_hk', collection: 'Halloween 🎃', name: 'Hello Kitty', theme: 'Fantasmita', rarity: '★★★ Épica', emoji: '👻', spriteKey: null, caught: false, msg: '¡Buuu!' },
+
+  // --- COLECCIÓN NAVIDAD ---
+  { id: 'xmas_purin', collection: 'Navidad 🎄', name: 'Pompompurin', theme: 'Reno Goloso', rarity: '★★ Rara', emoji: '🦌', spriteKey: null, caught: false, msg: '¡Repartiendo regalos!' },
+  { id: 'xmas_cinna', collection: 'Navidad 🎄', name: 'Cinnamoroll', theme: 'Muñeco de Nieve', rarity: '★★★ Épica', emoji: '⛄', spriteKey: null, caught: false, msg: '¡Brrr, abrázame!' },
+
+  // --- COLECCIÓN PLAYA ---
+  { id: 'beach_melody', collection: 'Playa 🏖️', name: 'My Melody', theme: 'Sirena Pastel', rarity: '★★★★ Secreta', emoji: '🧜‍♀️', spriteKey: null, caught: false, msg: '¡Nadando en el mar de fresa!' }
 ];
 
-let savedDex = localStorage.getItem('sanrio_catch_dex');
+// Lógica de Pestañas del Álbum
+const collectionsList = [...new Set(SANRIO_DATABASE.map(item => item.collection))];
+let currentCollection = collectionsList[0];
+
+// Cargar guardado
+let savedDex = localStorage.getItem('sanrio_catch_dex_v2');
 if (savedDex) {
   try {
     const ids = JSON.parse(savedDex);
@@ -98,16 +136,41 @@ function updateHUD() {
   document.getElementById('dex-count').innerText = `${caughtCount}/${SANRIO_DATABASE.length}`;
 }
 
+function renderTabs() {
+  const tabsContainer = document.getElementById('dex-tabs-container');
+  tabsContainer.innerHTML = '';
+  collectionsList.forEach(col => {
+    const btn = document.createElement('button');
+    btn.className = `dex-tab ${col === currentCollection ? 'active' : ''}`;
+    btn.innerText = col;
+    btn.onclick = () => {
+      currentCollection = col;
+      renderTabs(); // Actualiza estilos activos
+      renderDexGrid(); // Muestra las figuritas correctas
+    };
+    tabsContainer.appendChild(btn);
+  });
+}
+
 function toggleDex(show) {
   const modal = document.getElementById('dex-modal');
-  if (show) { renderDexGrid(); modal.classList.add('active'); } 
-  else { modal.classList.remove('active'); }
+  if (show) { 
+    renderTabs();
+    renderDexGrid(); 
+    modal.classList.add('active'); 
+  } else { 
+    modal.classList.remove('active'); 
+  }
 }
 
 function renderDexGrid() {
   const grid = document.getElementById('dex-grid');
   grid.innerHTML = '';
-  SANRIO_DATABASE.forEach(item => {
+  
+  // Filtrar solo los personajes de la pestaña actual
+  const currentItems = SANRIO_DATABASE.filter(item => item.collection === currentCollection);
+  
+  currentItems.forEach(item => {
     const card = document.createElement('div');
     card.className = `dex-card ${item.caught ? '' : 'locked'}`;
     let iconHTML = `<span class="card-icon">❓</span>`;
@@ -118,7 +181,7 @@ function renderDexGrid() {
         iconHTML = `<span class="card-icon">${item.emoji}</span>`;
       }
     }
-    card.innerHTML = `<span class="card-rarity">${item.caught ? item.rarity : '???'}</span> ${iconHTML} <div class="card-name">${item.caught ? item.name : 'Desconocido'}</div> <div class="card-theme">${item.caught ? item.theme : 'Sigue explorando...'}</div> ${item.caught ? `<div class="card-note">${item.msg}</div>` : ''}`;
+    card.innerHTML = `<span class="card-rarity">${item.caught ? item.rarity : '???'}</span> ${iconHTML} <div class="card-name">${item.caught ? item.name : 'Desconocido'}</div> <div class="card-theme">${item.caught ? item.theme : 'Falta capturar'}</div> ${item.caught ? `<div class="card-note">${item.msg}</div>` : ''}`;
     grid.appendChild(card);
   });
 }
@@ -129,7 +192,7 @@ let phaserScene = null;
 function showCatchScreen(sparkleObj) {
   currentSparkleTarget = sparkleObj;
   const p = sparkleObj.characterData;
-  document.getElementById('catch-rarity-tag').innerText = `✨ ${p.rarity.toUpperCase()}`;
+  document.getElementById('catch-rarity-tag').innerText = `✨ ¡DE LA COLECCIÓN ${p.collection.toUpperCase()}!`;
   
   const iconContainer = document.getElementById('catch-icon-container');
   if (p.spriteKey) {
@@ -139,10 +202,10 @@ function showCatchScreen(sparkleObj) {
   }
 
   document.getElementById('catch-name').innerText = p.name;
-  document.getElementById('catch-theme').innerText = `Variante: ${p.theme}`;
+  document.getElementById('catch-theme').innerText = `Variante: ${p.theme} (${p.rarity})`;
   
   if (p.caught) {
-    document.getElementById('catch-msg').innerText = `"¡Ya tienes a este personaje en tu álbum, pero gracias por los mimos!"`;
+    document.getElementById('catch-msg').innerText = `"¡Ya tienes esta figurita en tu álbum, pero gracias por los mimos!"`;
   } else {
     document.getElementById('catch-msg').innerText = `"${p.msg}"`;
   }
@@ -155,7 +218,7 @@ function confirmCatch() {
     const p = currentSparkleTarget.characterData;
     p.caught = true;
     const caughtIds = SANRIO_DATABASE.filter(x => x.caught).map(x => x.id);
-    localStorage.setItem('sanrio_catch_dex', JSON.stringify(caughtIds));
+    localStorage.setItem('sanrio_catch_dex_v2', JSON.stringify(caughtIds));
     
     currentSparkleTarget.destroyVisuals();
     updateHUD();
@@ -208,13 +271,10 @@ function preload() {
 function create() {
   phaserScene = this;
   
-  // SOLUCIÓN MUROS INVISIBLES: Ajustamos el tamaño del mundo de físicas
   this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
   
   this.add.tileSprite(worldWidth/2, worldHeight/2, worldWidth, worldHeight, 'tileGrass');
   this.add.rectangle(worldWidth/2, worldHeight/2, worldWidth, worldHeight).setStrokeStyle(16, 0xff9ebb);
-
-  // NOTA: Se ha eliminado el código que generaba las decoraciones estáticas (flores, árboles, etc.)
 
   player = this.physics.add.sprite(worldWidth / 2, worldHeight / 2, 'playerTexture');
   player.setCollideWorldBounds(true);
